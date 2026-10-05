@@ -20,7 +20,7 @@ export class TouchControls {
     root.innerHTML = `
       <div class="joystick" id="joystick"><div class="joystick-knob"></div></div>
       <div class="touch-buttons">
-        <button class="tbtn" data-act="craft">Craft</button>
+        <button class="tbtn" data-act="craft">Items</button>
         <button class="tbtn" data-act="place">Place</button>
         <button class="tbtn" data-act="break">Break</button>
         <button class="tbtn tbtn-jump" data-act="jump">Jump</button>

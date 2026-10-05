@@ -21,6 +21,21 @@ test('inventory add/remove and hotbar assignment', () => {
   assert.equal(inv.hotbar[0], null);
 });
 
+test('assignToSelected moves overflow items onto the hotbar and swaps existing ones', () => {
+  const inv = new Inventory();
+  inv.hotbar = [DIRT, SAND, null, null, null, null, null, null, null];
+  inv.counts = { [DIRT]: 1, [SAND]: 1, [LOG]: 2 };
+  assert.deepEqual(inv.overflowItems(), [LOG]);
+  inv.select(0);
+  assert.equal(inv.assignToSelected(LOG), true);
+  assert.equal(inv.hotbar[0], LOG);
+  assert.deepEqual(inv.overflowItems(), [DIRT]);
+  assert.equal(inv.assignToSelected(SAND), true);
+  assert.equal(inv.hotbar[0], SAND);
+  assert.equal(inv.hotbar[1], LOG);
+  assert.equal(inv.assignToSelected(BRICK), false);
+});
+
 test('crafting deducts inputs and adds output', () => {
   const inv = new Inventory();
   inv.add(LOG, 1);

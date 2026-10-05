@@ -13,10 +13,10 @@ export class Menu {
           ${touch ? `
           <p><b>Left stick</b> move &middot; <b>drag right side</b> look</p>
           <p><b>Break</b> / <b>Place</b> act on the block in the crosshair</p>
-          <p><b>Craft</b> opens recipes &middot; tap the hotbar to pick a block</p>` : `
+          <p><b>Items</b> opens inventory &amp; crafting &middot; tap the hotbar to pick a block</p>` : `
           <p><b>WASD</b> move &middot; <b>Space</b> jump &middot; <b>Shift</b> sprint</p>
           <p><b>Left click</b> break &middot; <b>Right click</b> place</p>
-          <p><b>1-9 / wheel</b> select &middot; <b>E</b> craft &middot; <b>Esc</b> pause</p>`}
+          <p><b>1-9 / wheel</b> select &middot; <b>E</b> inventory &amp; crafting &middot; <b>Esc</b> pause</p>`}
         </div>
         <details class="new-world">
           <summary>New world</summary>

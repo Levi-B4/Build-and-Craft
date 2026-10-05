@@ -6,7 +6,7 @@ import path from 'node:path';
 import puppeteer, { KnownDevices } from 'puppeteer-core';
 
 const CHROME = process.env.CHROME_PATH || '/usr/bin/google-chrome';
-const PORT = 4179;
+const PORT = Number(process.env.SMOKE_PORT) || 4179;
 const URL = `http://localhost:${PORT}/`;
 const OUT = path.resolve(process.argv[2] || 'screenshots');
 mkdirSync(OUT, { recursive: true });
@@ -140,6 +140,13 @@ async function main() {
     check('crafting: clicking Craft produces planks', planks === 4, `planks=${planks}`);
     const disabled = await page.evaluate(() => document.querySelector('.craft-btn[data-recipe="stone"]').disabled);
     check('crafting: recipe without inputs is disabled', disabled);
+    const gridCount = await page.evaluate(() => document.querySelectorAll('#crafting .inv-item').length);
+    const owned = await page.evaluate(() => Object.keys(window.__game.inventory.counts).length);
+    check('inventory: panel lists every owned item', gridCount === owned && owned > 0, `grid=${gridCount} owned=${owned}`);
+    await page.evaluate(() => window.__game.selectSlot(8));
+    await page.click('#crafting .inv-item[data-id="9"]');
+    const slot9 = await page.evaluate(() => window.__game.inventory.hotbar[8]);
+    check('inventory: clicking an item puts it in the selected hotbar slot', slot9 === 9, `slot9=${slot9}`);
     await page.screenshot({ path: path.join(OUT, 'crafting.png') });
     await page.evaluate(() => window.__game.toggleCrafting());
 

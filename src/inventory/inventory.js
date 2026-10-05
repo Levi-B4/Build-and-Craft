@@ -55,6 +55,16 @@ export class Inventory {
     this.emit();
   }
 
+  /** Put an owned item into the selected hotbar slot, swapping if it is already on the hotbar. */
+  assignToSelected(id) {
+    if (!this.has(id)) return false;
+    const from = this.hotbar.indexOf(id);
+    if (from !== -1) this.hotbar[from] = this.hotbar[this.selected];
+    this.hotbar[this.selected] = id;
+    this.emit();
+    return true;
+  }
+
   selectedItem() {
     const id = this.hotbar[this.selected];
     return id != null && this.has(id) ? id : null;

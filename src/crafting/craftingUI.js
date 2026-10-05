@@ -1,4 +1,5 @@
-// Crafting panel: a flat list of recipes, craft buttons enabled when inputs are available.
+// Inventory & crafting panel: every owned item (click to put it in the selected hotbar slot)
+// plus a flat list of recipes, craft buttons enabled when inputs are available.
 import { RECIPES, canCraft, craft } from './recipes.js';
 import { blockName } from '../world/blocks.js';
 import { applyIcon } from '../ui/hud.js';
@@ -11,13 +12,24 @@ export class CraftingUI {
     root.innerHTML = `
       <div class="panel crafting-panel">
         <div class="panel-header">
-          <h2>Crafting</h2>
+          <h2>Inventory</h2>
           <button class="close-btn" aria-label="Close">&times;</button>
         </div>
+        <div class="inv-grid"></div>
+        <p class="hint">Click or tap an item to put it in the selected hotbar slot.</p>
+        <h3 class="panel-sub">Crafting</h3>
         <ul class="recipe-list"></ul>
         <p class="hint">Gather blocks by breaking them, then combine them here. Press E to close.</p>
       </div>`;
     this.list = root.querySelector('.recipe-list');
+    this.grid = root.querySelector('.inv-grid');
+    this.grid.addEventListener('click', (e) => {
+      const cell = e.target.closest('.inv-item');
+      if (!cell) return;
+      e.preventDefault();
+      e.stopPropagation();
+      this.inventory.assignToSelected(Number(cell.dataset.id));
+    });
     const close = (e) => {
       e.preventDefault();
       e.stopPropagation();
@@ -60,7 +72,26 @@ export class CraftingUI {
     return { recipe, li, btn };
   }
 
+  renderGrid() {
+    const inv = this.inventory;
+    const ids = Object.keys(inv.counts).map(Number).sort((a, b) => a - b);
+    const selectedId = inv.hotbar[inv.selected];
+    this.grid.innerHTML = ids.length ? '' : '<p class="inv-empty">Nothing yet. Break some blocks!</p>';
+    for (const id of ids) {
+      const cell = document.createElement('button');
+      cell.className = 'inv-item';
+      cell.dataset.id = id;
+      cell.title = blockName(id);
+      cell.classList.toggle('on-hotbar', inv.hotbar.includes(id));
+      cell.classList.toggle('selected', id === selectedId);
+      cell.innerHTML = `<span class="icon"></span><span class="inv-count">${inv.count(id)}</span><span class="inv-name">${blockName(id)}</span>`;
+      applyIcon(cell.querySelector('.icon'), id);
+      this.grid.appendChild(cell);
+    }
+  }
+
   refresh() {
+    this.renderGrid();
     for (const { recipe, li, btn } of this.rows) {
       const ok = canCraft(this.inventory, recipe);
       btn.disabled = !ok;
